@@ -6,11 +6,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{E5CF4FAB-7806-49CB-8B83-8A46FCEA661E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{441842E3-C9E2-416A-BC12-3929F5D0E286}"
-	ProjectSection(SolutionItems) = preProject
-		CitationFixer.vsmdi = CitationFixer.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{69A4DF3D-7C63-4420-A3D7-D1C832034A5A}"
 EndProject
