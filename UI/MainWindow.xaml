@@ -1,0 +1,30 @@
+﻿<Window x:Class="UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:col="clr-namespace:System.Collections;assembly=mscorlib" xmlns:lib="clr-namespace:Lib;assembly=Lib"
+        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
+  <Window.DataContext>
+    <col:ArrayList>
+      <lib:ReferencePosition NewIndex="1">
+        <lib:ReferencePosition.Item>
+          <lib:Reference Index="1" Ref="Test" />
+        </lib:ReferencePosition.Item>
+      </lib:ReferencePosition>
+    </col:ArrayList>
+  </Window.DataContext>
+  <ListBox Name="listBox" ItemsSource="{Binding .}" AllowDrop="True" 
+           MouseMove="ListBox_MouseMove" PreviewMouseDown="listBox_PreviewMouseDown"
+           DragDrop.Drop="ListBox_Drop" SelectionMode="Single" >
+    <ListBox.ItemTemplate>
+      <DataTemplate>
+        <StackPanel Orientation="Horizontal" Margin="1">
+          <TextBlock Text="{Binding Path=Index, Mode=OneWay}" />
+          <TextBlock Text="→" />
+          <TextBlock Text="{Binding Path=NewIndex}" />
+          <TextBlock Text=": " />
+          <TextBlock Text="{Binding Path=Ref}" />
+        </StackPanel>
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
+</Window>
