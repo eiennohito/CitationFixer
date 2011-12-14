@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Lib {
   public class CitationPlace {
@@ -22,6 +24,13 @@ namespace Lib {
           .Select(int.Parse)
           .Select(s => new CitationIndex { Index = s })
           .ToList();
+    }
+
+    public string Format(Func<int, int> map)
+    {
+      return Indices
+        .Select(i => map(i.Index))
+        .Aggregate(new StringBuilder(), (b, i) => b.AppendFormat("{0}, ", i), b => b.ToString(0, b.Length - 2));
     }
   }
 

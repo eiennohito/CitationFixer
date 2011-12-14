@@ -34,6 +34,28 @@ namespace Lib {
     }
   }
 
+  public class ReferenceShift : INotifyPropertyChanged
+  {
+    private int _shift;
+    public int Shift
+    {
+      get { return _shift; }
+      set
+      {
+        _shift = value;
+        OnPropertyChanged("Shift");
+      }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public void OnPropertyChanged(string name)
+    {
+      PropertyChangedEventHandler handler = PropertyChanged;
+      if (handler != null) handler(this, new PropertyChangedEventArgs(name));
+    }
+  }
+
   public class ReferencePosition : INotifyPropertyChanged {
     public Reference Item { get; set; }
     private int newIndex;
@@ -42,6 +64,39 @@ namespace Lib {
       set { 
         newIndex = value;
         OnPropertyChanged("NewIndex");
+        OnPropertyChanged("NewIndexValue");
+      }
+    }
+
+    private ReferenceShift _shift;
+    public ReferenceShift Shift
+    {
+      get { return _shift; }
+      set
+      {
+        if (_shift != null)
+        {
+          _shift.PropertyChanged -= ShiftChanged;
+        }
+        _shift = value;
+        OnPropertyChanged("NewIndexValue");
+        _shift.PropertyChanged += ShiftChanged;
+      }
+    }
+
+    private void ShiftChanged(object sender, PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName.Equals("Shift"))
+      {
+        OnPropertyChanged("NewIndexValue");
+      }
+    }
+
+    public int NewIndexValue
+    {
+      get { 
+        int val = newIndex;
+        return _shift == null ? val : val + _shift.Shift;
       }
     }
 

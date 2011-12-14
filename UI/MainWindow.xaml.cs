@@ -22,6 +22,8 @@ namespace UI {
   public partial class MainWindow : Window {
     public MainWindow() {
       InitializeComponent();
+      Shift = new ReferenceShift {Shift = 0};
+      Result = false;
     }
 
     private ObservableCollection<ReferencePosition> positions = new ObservableCollection<ReferencePosition>();
@@ -33,10 +35,18 @@ namespace UI {
       var rp = e.Data.GetData(typeof(ReferencePosition)) as ReferencePosition;
       if (rp != null && ind != rp.NewIndex) {
         var old = rp.NewIndex;
-        positions[old].NewIndex = ind;
-        positions[ind].NewIndex = old;
-        positions.Swap(old, ind);
-        listBox.SelectedIndex = -1;
+        MoveItem(old, ind);
+      }
+    }
+
+    private void MoveItem(int from, int to)
+    {
+      var p = positions[from];
+      positions.RemoveAt(from);
+      positions.Insert(to, p);
+      for (int i = 0; i < positions.Count; i++)
+      {
+        positions[i].NewIndex = i;
       }
     }
 
@@ -85,8 +95,13 @@ namespace UI {
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
-      DataContext = positions;
+      listBox.DataContext = positions;
+      this.DataContext = Shift;
     }
+
+    public ReferenceShift Shift { get; set; }
+
+    public bool Result { get; set; }
 
     public IEnumerable<ReferencePosition> Positions {
       get { return positions; }
@@ -94,8 +109,27 @@ namespace UI {
         positions.Clear();
         foreach (var v in value) {
           positions.Add(v);
+          v.Shift = Shift;
         }
       }
+    }
+
+    public Action<MainWindow> OnOk { get; set; }
+
+    private void Ok_Click(object sender, RoutedEventArgs e)
+    {
+      Result = true;
+      if (OnOk != null)
+      {
+        OnOk(this);
+      }
+      Close();
+    }
+
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+      Result = false;
+      Close();
     }
   }
 }
