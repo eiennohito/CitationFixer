@@ -45,26 +45,34 @@ namespace CitationFixer {
       var positions = form.Positions.OrderBy(p => p.Index).ToList();
       Document doc = Globals.ThisAddIn.Application.ActiveDocument;
 
-      Range litRange = doc.Application.Selection.Range;
-      var lits = form.Positions.OrderBy(p => p.NewIndexValue).ToList();
-      litRange.Text = lits.Select(p => p.Ref).Aggregate((s1, s2) => string.Format("{0}\r{1}", s1, s2));
-      var template = doc.Application.ListGalleries[WdListGalleryType.wdNumberGallery].ListTemplates[1];
-      template.ListLevels[1].StartAt = lits[0].NewIndexValue;
-      litRange.ListFormat.ApplyListTemplate(template);
-
-      var lb = Counter.SymbolIndices(doc.Range(), "[");
-      var rb = Counter.SymbolIndices(doc.Range(), "]");
-      var ranges = new Coupler().Couple(lb, rb).ToList();
-
-      var places = ranges
-        .Select(r => Tuple.Create(r, doc.Range(r.Begin + 1, r.End)))
-        .Select(t => new CitationPlace(t.Item1, t.Item2.Text))
-        .OrderByDescending(p => p.Loc.Begin).ToList();
-
-      foreach (var p in places)
+      try
       {
-        var range = doc.Range(p.Loc.Begin + 1, p.Loc.End);
-        range.Text = p.Format(i => positions[i].NewIndexValue);
+        doc.Application.UndoRecord.StartCustomRecord("Fixing citations");
+        Range litRange = doc.Application.Selection.Range;
+        var lits = form.Positions.OrderBy(p => p.NewIndexValue).ToList();
+        litRange.Text = lits.Select(p => p.Ref).Aggregate((s1, s2) => string.Format("{0}\r{1}", s1, s2));
+        var template = doc.Application.ListGalleries[WdListGalleryType.wdNumberGallery].ListTemplates[1];
+        template.ListLevels[1].StartAt = lits[0].NewIndexValue;
+        litRange.ListFormat.ApplyListTemplate(template);
+
+        var lb = Counter.SymbolIndices(doc.Range(), "[");
+        var rb = Counter.SymbolIndices(doc.Range(), "]");
+        var ranges = new Coupler().Couple(lb, rb).ToList();
+
+        var places = ranges
+          .Select(r => Tuple.Create(r, doc.Range(r.Begin + 1, r.End)))
+          .Select(t => new CitationPlace(t.Item1, t.Item2.Text))
+          .OrderByDescending(p => p.Loc.Begin).ToList();
+
+        foreach (var p in places)
+        {
+          var range = doc.Range(p.Loc.Begin + 1, p.Loc.End);
+          range.Text = p.Format(i => positions[i].NewIndexValue);
+        }
+      }
+      finally
+      {
+        doc.Application.UndoRecord.EndCustomRecord();
       }
     }
   }
